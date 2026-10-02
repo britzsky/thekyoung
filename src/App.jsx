@@ -65,7 +65,7 @@ export default function App() {
             <li><a href="#space">공간</a></li>
             <li><a href="#location">오시는 길</a></li>
           </ul>
-          <button className="nav-cta">예약 문의</button>
+          {/* <button className="nav-cta">예약 문의</button> */}
         </div>
       </nav>
 
@@ -240,7 +240,7 @@ export default function App() {
 
       <section className="cta">
         <h2 className="serif">지금의 피부 상태부터, 편하게 이야기 나눠보세요.</h2>
-        <button className="cta-btn">상담 예약하기</button>
+        {/* <button className="cta-btn">상담 예약하기</button> */}
       </section>
 
       <footer>
