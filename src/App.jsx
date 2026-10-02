@@ -1,14 +1,19 @@
 import ext06 from '../assert/images/main/KakaoTalk_20261002_111913256_12.jpg'
 import ext04 from '../assert/images/main/KakaoTalk_20261002_111247636_04.jpg'
+import ext05 from '../assert/images/main/KakaoTalk_20260922_170145376.png'
+import doctorPhoto from '../assert/images/main/KakaoTalk_20261002_142920340.png'
 
-const exterior = [ext06, ext04]
+//const exterior = [ext06, ext04]
+const exterior = [ext05]
 
-// 앞쪽 순서를 직접 지정할 사진 (적힌 순서대로, 나머지는 그 뒤에 파일명 순서)
-const featuredImages = [
-  'KakaoTalk_20261002_111913256_12.jpg',
+// 공간 갤러리에 보여줄 사진 (적힌 순서대로, 여기 없는 사진은 표시 안 함)
+// 모든 사진은 같은 크기의 칸(3열, 세로 2:3)으로 표시됨 (wideImages만 예외)
+const galleryImages = [
   'KakaoTalk_20261002_111913256_14.jpg',
   'KakaoTalk_20261002_111913256_13.jpg',
-  'KakaoTalk_20261002_111913256_01.jpg',
+  'KakaoTalk_20261002_111913256_17.jpg',
+  'KakaoTalk_20261002_111913256_12.jpg',
+  'KakaoTalk_20261002_111913256.jpg',
   'KakaoTalk_20261002_111913256_15.jpg',
   'KakaoTalk_20261002_111913256_02.jpg',
   'KakaoTalk_20261002_111913256_05.jpg',
@@ -19,47 +24,33 @@ const featuredImages = [
   'KakaoTalk_20261002_111913256_20.jpg',
   'KakaoTalk_20261002_111913256_19.jpg',
   'KakaoTalk_20261002_111913256_08.jpg',
-  'KakaoTalk_20261002_111913256_03.jpg',
   'KakaoTalk_20261002_111913256_09.jpg',
+  'KakaoTalk_20261002_111253946_01.jpg',
+  'KakaoTalk_20261002_111913256_03.jpg',
   'KakaoTalk_20261002_111913256_11.jpg',
-  'KakaoTalk_20261002_111913256_16.jpg',
 ]
 
-// inner 폴더의 사진을 모두 불러옴 (폴더에 넣고 빼는 것만으로 반영)
-// featuredImages가 먼저, 나머지는 파일명 순서
-const featuredRank = (name) => {
-  const i = featuredImages.indexOf(name)
-  return i === -1 ? featuredImages.length : i
-}
-const innerImages = Object.entries(
-  import.meta.glob('../assert/images/inner/*.{jpg,jpeg,png,webp}', { eager: true, import: 'default' })
+// inner 폴더의 사진 파일들 (파일명 → 주소)
+const innerFiles = Object.fromEntries(
+  Object.entries(
+    import.meta.glob('../assert/images/inner/*.{jpg,jpeg,png,webp}', { eager: true, import: 'default' })
+  ).map(([path, src]) => [path.split('/').pop(), src])
 )
-  .map(([path, src]) => ({ src, name: path.split('/').pop() }))
-  .sort(
-    (a, b) =>
-      featuredRank(a.name) - featuredRank(b.name) ||
-      a.name.localeCompare(b.name, undefined, { numeric: true })
-  )
 
-// 가로로 길게 늘릴 사진: left = 왼쪽 끝~가운데, right = 가운데~오른쪽 끝
-const wideImages = {
-  'KakaoTalk_20261002_111913256_13.jpg': 'left',
-  'KakaoTalk_20261002_111913256_14.jpg': 'right',
+// 가로로 두 칸 늘릴 사진: left = 왼쪽 끝~가운데, right = 가운데~오른쪽 끝
+// 예: 'KakaoTalk_20261002_111913256_14.jpg': 'left',
+const wideImages = {}
+
+// 목록에 적었는데 inner 폴더에 없는 파일은 개발 중 브라우저 콘솔에 경고
+if (import.meta.env.DEV) {
+  const missing = galleryImages.filter((name) => !innerFiles[name])
+  if (missing.length) console.warn('[공간 갤러리] inner 폴더에 없는 파일:', missing)
 }
 
-// 높이를 절반으로 줄여 한 칸에 위아래로 쌓을 사진 (위 → 아래 순서)
-// 위치: 13번 오른쪽 빈 칸 (모바일은 12번 오른쪽) — index.css의 .stack 참고
-const stackedImages = [
-  'KakaoTalk_20261002_111913256.jpg',
-  'KakaoTalk_20261002_111913256_17.jpg',
-]
-
-function imageClass(name) {
-  if (wideImages[name]) return `wide-${wideImages[name]}`
-  const stackIndex = stackedImages.indexOf(name)
-  if (stackIndex !== -1) return `stack stack-${stackIndex + 1}`
-  return undefined
-}
+// 실제로 화면에 그릴 목록 (폴더에 없는 파일명은 건너뜀)
+const innerImages = galleryImages
+  .filter((name) => innerFiles[name])
+  .map((name) => ({ name, src: innerFiles[name] }))
 
 export default function App() {
   return (
@@ -169,7 +160,9 @@ export default function App() {
             <h2>진료실에서는 결과보다 먼저, 지금의 피부 상태를 이야기합니다.</h2>
           </div>
           <div className="doctor-grid">
-            <div className="doctor-photo">원장 프로필 사진</div>
+            <div className="doctor-photo">
+              <img src={doctorPhoto} alt="김 경 원장" />
+            </div>
             <div className="doctor-copy">
               <h3 className="serif">김 경 원장</h3>
               <div className="role serif">더 경의원 대표원장</div>
@@ -198,13 +191,13 @@ export default function App() {
             <h2>한 사람의 진료를 위해 비워둔 자리들입니다.</h2>
           </div>
           <div className="gallery">
-            {innerImages.map(({ src, name }) => (
+            {innerImages.map(({ name, src }) => (
               <img
                 key={src}
                 src={src}
                 alt="더 경의원 내부"
                 loading="lazy"
-                className={imageClass(name)}
+                className={wideImages[name] && `wide-${wideImages[name]}`}
               />
             ))}
           </div>

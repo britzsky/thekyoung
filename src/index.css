@@ -127,22 +127,18 @@ a { color: inherit; }
   max-width: 1120px;
   padding: 0 40px 100px;
 }
+/* 외관 사진: 가운데 정렬, 원본 비율 그대로 (여러 장이면 나란히) */
 .hero-image {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
   gap: 20px;
 }
 .hero-image img {
   display: block;
-  width: 100%;
-  aspect-ratio: 4 / 5;
-  object-fit: cover;
-  /* 하단 도로 영역을 덜어내고 건물 위주로 */
-  object-position: center 30%;
+  width: min(100%, 560px);
+  height: auto;
   border: 1px solid var(--line);
-}
-@media (max-width: 780px) {
-  .hero-image { grid-template-columns: 1fr; }
 }
 
 /* Section shell */
@@ -237,15 +233,17 @@ a { color: inherit; }
   gap: 64px;
   align-items: center;
 }
+/* 원장 사진: 흰 배경 사진이라 액자도 흰색, 원본 비율 그대로 */
 .doctor-photo {
-  aspect-ratio: 3 / 4;
-  background: linear-gradient(170deg, #efeadd, #f7f4ec);
+  background: #fff;
   border: 1px solid var(--line);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--muted);
-  font-size: 13px;
+}
+.doctor-photo img {
+  display: block;
+  width: 100%;
+  height: auto;
+  /* 원본 위·아래 끝의 회색 줄 가리기 */
+  clip-path: inset(3px 0);
 }
 .doctor-copy h3 {
   font-family: 'Noto Serif KR', serif;
@@ -280,42 +278,31 @@ a { color: inherit; }
   .doctor-grid { grid-template-columns: 1fr; gap: 32px; }
 }
 
-#space .wrap { container-type: inline-size; }
-
-/* Space gallery — 3열 그리드.
-   행 하나 = 기본 칸(2:3) 높이의 절반. 기본 사진은 2행, 쌓는 사진은 1행을 차지 */
+/* Space gallery — 3열 그리드, 모든 사진 같은 크기(세로 2:3).
+   wide-* 사진만 두 칸 너비, 높이는 같은 줄 사진에 맞춤.
+   dense: 넓은 사진 때문에 생긴 빈칸을 뒤 사진으로 채움 */
 .gallery {
-  --cols: 3;
-  --gap: 20px;
-  /* 행 높이 계산(cqw)의 기준은 부모 .wrap — 위 #space .wrap 참고 */
   display: grid;
-  grid-template-columns: repeat(var(--cols), 1fr);
-  grid-auto-rows: calc(((100cqw - (var(--cols) - 1) * var(--gap)) / var(--cols) * 1.5 - var(--gap)) / 2);
+  grid-template-columns: repeat(3, 1fr);
   grid-auto-flow: row dense;
-  gap: var(--gap);
+  gap: 20px;
 }
 .gallery img {
   display: block;
   width: 100%;
   height: 100%;
-  grid-row: span 2;
+  aspect-ratio: 2 / 3;
   object-fit: cover;
   border: 1px solid var(--line);
 }
+.gallery .wide-left,
+.gallery .wide-right { aspect-ratio: auto; }
 .gallery .wide-left { grid-column: 1 / span 2; }
 .gallery .wide-right { grid-column: 2 / span 2; }
-/* 쌓는 사진: 두 번째 줄 오른쪽 칸 (13번 옆) */
-.gallery .stack { grid-column: 3; }
-.gallery .stack-1 { grid-row: 3; }
-.gallery .stack-2 { grid-row: 4; }
 @media (max-width: 780px) {
-  .gallery { --cols: 2; --gap: 12px; }
+  .gallery { grid-template-columns: repeat(2, 1fr); gap: 12px; }
   .gallery .wide-left,
-  .gallery .wide-right { grid-column: 1 / -1; }
-  /* 모바일: 첫 줄 오른쪽 칸 (12번 옆) */
-  .gallery .stack { grid-column: 2; }
-  .gallery .stack-1 { grid-row: 1; }
-  .gallery .stack-2 { grid-row: 2; }
+  .gallery .wide-right { grid-column: 1 / -1; aspect-ratio: 3 / 2; }
 }
 
 /* Location */
