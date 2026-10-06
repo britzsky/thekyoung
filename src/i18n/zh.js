@@ -54,10 +54,10 @@ export default {
   doctor: {
     label: '院长介绍',
     heading: '在诊室里，比起结果，我们先聊聊您现在的皮肤状态。',
-    name: 'Dr. Duk Young Kim',
+    name: 'Dr. Deokyoung Kim',
     role: 'THE 炅 CLINIC 代表院长',
     paragraphs: [
-      'THE 炅 CLINIC 代表院长 Dr. Duk Young Kim，',
+      'THE 炅 CLINIC 代表院长 Dr. Deokyoung Kim，',
       '以精湛的技术与出色的审美，',
       '开展独树一帜的提拉与焕肤抗衰治疗。',
       '为了将每个人独有的肤质与美丽，',
@@ -100,10 +100,13 @@ export default {
         lines: ['狎鸥亭罗德奥站4号出口步行3分钟，汉堡王（Burger King）对面', '楼前可停车', '提供代客泊车（5,000韩元）'],
       },
       { term: '咨询电话', lines: ['+82-2-6959-8787'], tel: '+82269598787' },
+      { term: '电子邮箱', lines: ['thekyungclinic@naver.com'], copy: true },
     ],
   },
   cta: '从您现在的皮肤状态开始，轻松地聊一聊吧。',
   toTop: '返回顶部',
+  booking: '立即预约',
+  copy: { touch: '长按即可复制', mouse: '点击即可复制', done: '已复制' },
   footer: {
     name: '© THE 炅 CLINIC',
     address: ['首尔特别市江南区宣陵路152街6号 1–3层', '（清潭洞 BK清潭大厦）· +82-2-6959-8787'],

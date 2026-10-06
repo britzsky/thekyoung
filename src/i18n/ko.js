@@ -115,10 +115,18 @@ export default {
         ],
       },
       { term: "문의", lines: ["02-6959-8787"], tel: "+82269598787" },
+      {
+        term: "메일",
+        lines: ["thekyungclinic@naver.com"],
+        copy: true,
+      },
     ],
   },
   cta: "지금의 피부 상태부터, 편하게 이야기 나눠보세요.",
   toTop: "맨 위로",
+  booking: "예약하기",
+  // 메일처럼 copy: true 인 항목 — 휴대폰은 길게 눌러, PC는 클릭해서 복사
+  copy: { touch: "길게 눌러 복사", mouse: "클릭하면 복사됩니다", done: "복사되었습니다" },
   footer: {
     name: "© 더 경의원 THE 炅 CLINIC",
     address: [

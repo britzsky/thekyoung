@@ -54,10 +54,10 @@ export default {
   doctor: {
     label: '院長紹介',
     heading: '診察室では、結果よりも先に、今の肌の状態についてお話しします。',
-    name: 'Dr. Duk Young Kim',
+    name: 'Dr. Deokyoung Kim',
     role: 'THE 炅 CLINIC 代表院長',
     paragraphs: [
-      'THE 炅 CLINIC 代表院長 Dr. Duk Young Kimは、',
+      'THE 炅 CLINIC 代表院長 Dr. Deokyoung Kimは、',
       '精緻な施術と優れた美的センスで、',
       '唯一無二のリフトアップとリジュビネーション施術を行っています。',
       'お一人おひとりが持つ肌タイプと美しさを、自然に、',
@@ -100,10 +100,13 @@ export default {
         lines: ['狎鴎亭ロデオ駅4番出口から徒歩3分、バーガーキング向かい', '建物前に駐車可能', 'バレーパーキングあり（5,000ウォン）'],
       },
       { term: 'お問い合わせ', lines: ['+82-2-6959-8787'], tel: '+82269598787' },
+      { term: 'メール', lines: ['thekyungclinic@naver.com'], copy: true },
     ],
   },
   cta: '今の肌の状態から、お気軽にご相談ください。',
   toTop: 'ページの先頭へ',
+  booking: 'ご予約',
+  copy: { touch: '長押しでコピー', mouse: 'クリックでコピー', done: 'コピーしました' },
   footer: {
     name: '© THE 炅 CLINIC',
     address: ['ソウル特別市江南区宣陵路152ギル6 1〜3階', '（清潭洞 BK清潭ビル）· +82-2-6959-8787'],

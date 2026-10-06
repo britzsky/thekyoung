@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState } from 'react'
+import { Fragment, useEffect, useRef, useState } from 'react'
 import { LANGS, useLang } from './i18n/index.js'
 import ext06 from '../assert/images/main/KakaoTalk_20261002_111913256_12.jpg'
 import ext04 from '../assert/images/main/KakaoTalk_20261002_111247636_04.jpg'
@@ -57,14 +57,30 @@ const innerImages = galleryImages
 // 병원 위치 (지도 핀 좌표) — 모두 인증키 없이 쓰는 공개 링크
 const LAT = 37.5239868789549
 const LNG = 127.039912145449
-const ADDRESS = '서울 강남구 선릉로152길 6'
 
 // 페이지에 넣는 구글 지도 (hl: 지도 글자 언어)
 const mapEmbedUrl = (hl) => `https://maps.google.com/maps?q=${LAT},${LNG}&z=17&hl=${hl}&output=embed`
 
+// 네이버 플레이스 (병원 ID) — 예약 버튼과 지도 버튼에서 사용
+const NAVER_PLACE = 'https://map.naver.com/p/entry/place/2069245162'
+// PC는 네이버 지도 안의 예약 화면 — {DATE} 자리에 누르는 순간의 한국 날짜(오늘)가 들어감
+// (현재 네이버는 이 날짜와 상관없이 항상 오늘로 열지만, 바뀌어도 오늘로 열리도록 넣어 둠)
+const BOOKING_URL_PC =
+  `${NAVER_PLACE}?placePath=%2Fbooking%3FbookingRedirectUrl%3Dhttps%253A%252F%252Fm.booking.naver.com%252Fbooking%252F16%252Fbizes%252F1743429%252Fitems%252F8081298%253Farea%253Dpll%2526lang%253Dko%2526map-search%253D1%2526service-target%253Dmap-pc%2526startDate%253D{DATE}%2526theme%253Dplace&placeSearchOption=entry%3Dpll%26fromNxList%3Dtrue&searchType=place&c=15.00,0,0,0,dh`
+// 휴대폰·태블릿(터치 화면)은 네이버 모바일 예약 페이지로 바로 연결
+// startDate는 누르는 순간의 한국 날짜(오늘)로 채움 (예: 2026-10-06)
+const BOOKING_URL_MOBILE = 'https://m.booking.naver.com/booking/16/bizes/1743429/items/8081298?entry=pll&lang=ko&theme=place'
+const isTouchDevice = window.matchMedia('(hover: none) and (pointer: coarse)').matches
+const todayInKorea = () =>
+  new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Seoul' }).format(new Date())
+const bookingUrl = () =>
+  isTouchDevice
+    ? `${BOOKING_URL_MOBILE}&startDate=${todayInKorea()}`
+    : BOOKING_URL_PC.replaceAll('{DATE}', todayInKorea())
+
 // 지도 아래 버튼이 여는 주소 (휴대폰에선 앱이 있으면 앱으로 열림)
 const MAP_LINKS = {
-  naver: `https://map.naver.com/p/search/${encodeURIComponent(ADDRESS)}`,
+  naver: NAVER_PLACE,
   kakao: `https://map.kakao.com/link/map/${encodeURIComponent('더 경의원')},${LAT},${LNG}`,
   google: `https://www.google.com/maps/search/?api=1&query=${LAT},${LNG}`,
 }
@@ -87,6 +103,79 @@ function GoldMark({ text }) {
       {part}
     </Fragment>
   ))
+}
+
+// 클립보드에 복사 (https가 아닌 주소에서도 되도록 예전 방식으로 한 번 더 시도)
+function copyText(text) {
+  if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(text)
+  const ta = document.createElement('textarea')
+  ta.value = text
+  ta.setAttribute('readonly', '')
+  ta.style.cssText = 'position:fixed;top:0;opacity:0'
+  document.body.appendChild(ta)
+  ta.select()
+  const ok = document.execCommand('copy')
+  ta.remove()
+  return ok ? Promise.resolve() : Promise.reject()
+}
+
+// 휴대폰은 길게(0.5초) 눌렀다 떼면, PC는 클릭하면 복사
+// 브라우저가 복사를 허용하는 '손을 뗀 순간'에 복사함
+const HOLD_MS = 500
+function CopyOnHold({ text, hint, onCopied, children }) {
+  const [pressing, setPressing] = useState(false)
+  const pressedAt = useRef(0)
+  const pointer = useRef('mouse')
+  const copy = () => copyText(text).then(onCopied, () => {})
+
+  return (
+    <span
+      className={`copy-hold${pressing ? ' pressing' : ''}`}
+      role="button"
+      tabIndex={0}
+      title={hint}
+      onPointerDown={(e) => {
+        pointer.current = e.pointerType
+        if (e.pointerType === 'mouse') return
+        pressedAt.current = Date.now()
+        setPressing(true)
+      }}
+      onPointerUp={(e) => {
+        if (e.pointerType === 'mouse') return
+        setPressing(false)
+        if (Date.now() - pressedAt.current >= HOLD_MS) {
+          navigator.vibrate?.(15)
+          copy()
+        }
+      }}
+      onPointerCancel={() => setPressing(false)}
+      onPointerLeave={() => setPressing(false)}
+      onContextMenu={(e) => e.preventDefault()}
+      onClick={() => pointer.current === 'mouse' && copy()}
+      onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), copy())}
+    >
+      {children}
+    </span>
+  )
+}
+
+// 화면 아래에 잠깐 떴다 사라지는 안내
+function useToast() {
+  const [message, setMessage] = useState('')
+  const [shown, setShown] = useState(false)
+  const timer = useRef()
+  const show = (text) => {
+    setMessage(text)
+    setShown(true)
+    clearTimeout(timer.current)
+    timer.current = setTimeout(() => setShown(false), 1800)
+  }
+  const toast = (
+    <div className={`toast${shown ? ' shown' : ''}`} role="status" aria-live="polite">
+      {message}
+    </div>
+  )
+  return [toast, show]
 }
 
 // 페이지 맨 위로 부드럽게 이동 (로고, 위로 가기 버튼에서 사용)
@@ -144,6 +233,7 @@ function LangSwitch({ lang, onChange }) {
 
 export default function App() {
   const { lang, t, choose } = useLang()
+  const [toast, showToast] = useToast()
 
   return (
     <>
@@ -291,13 +381,20 @@ export default function App() {
               </div>
             </div>
             <dl className="loc-info">
-              {t.location.info.map(({ term, lines, tel }) => (
+              {t.location.info.map(({ term, lines, tel, copy }) => (
                 <Fragment key={term}>
                   <dt>{term}</dt>
                   <dd>
-                    {/* tel이 있는 항목(문의)은 누르면 전화 걸기 */}
+                    {/* tel이 있는 항목(문의)은 누르면 전화 걸기, copy 항목(메일)은 복사 */}
                     {tel ? (
                       <a className="tel-link" href={`tel:${tel}`}><Lines lines={lines} /></a>
+                    ) : copy ? (
+                      <>
+                        <CopyOnHold text={lines.join(' ')} hint={t.copy.mouse} onCopied={() => showToast(t.copy.done)}>
+                          <Lines lines={lines} />
+                        </CopyOnHold>
+                        <span className="copy-hint">{t.copy.touch}</span>
+                      </>
                     ) : (
                       <Lines lines={lines} />
                     )}
@@ -321,7 +418,25 @@ export default function App() {
         </div>
       </footer>
 
+      {/* 오른쪽 아래, 위로 가기 버튼 위에 항상 떠 있는 예약 버튼 */}
+      <a
+        className="booking-btn"
+        href={bookingUrl()}
+        // 페이지를 띄워둔 채 날짜가 바뀌어도 누르는 순간 오늘 날짜로 다시 맞춤
+        onClick={(e) => { e.currentTarget.href = bookingUrl() }}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={t.booking}
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <rect x="4" y="5.5" width="16" height="14" rx="1.5" />
+          <path d="M4 10h16M8.5 3.5v4M15.5 3.5v4" />
+        </svg>
+        {/* 평소엔 숨어 있다가 마우스를 올리면 펼쳐짐 */}
+        <span className="booking-label">{t.booking}</span>
+      </a>
       <ToTop label={t.toTop} />
+      {toast}
     </>
   )
 }

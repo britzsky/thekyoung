@@ -54,10 +54,10 @@ export default {
   doctor: {
     label: 'Our Doctor',
     heading: 'In the consultation room, we talk about your skin as it is today — before we talk about results.',
-    name: 'Dr. Duk Young Kim',
+    name: 'Dr. Deokyoung Kim',
     role: 'Medical Director, THE 炅 CLINIC',
     paragraphs: [
-      'Dr. Duk Young Kim, Medical Director of THE 炅 CLINIC,',
+      'Dr. Deokyoung Kim, Medical Director of THE 炅 CLINIC,',
       'combines precise technique with a refined aesthetic sense',
       'to deliver distinctive lifting and rejuvenation treatments.',
       'Striving constantly to bring out each person’s own skin and beauty',
@@ -108,10 +108,13 @@ export default {
         ],
       },
       { term: 'Contact', lines: ['+82-2-6959-8787'], tel: '+82269598787' },
+      { term: 'Email', lines: ['thekyungclinic@naver.com'], copy: true },
     ],
   },
   cta: 'Start by telling us about your skin today — we are here to listen.',
   toTop: 'Back to top',
+  booking: 'Book Now',
+  copy: { touch: 'Press and hold to copy', mouse: 'Click to copy', done: 'Copied' },
   footer: {
     name: '© THE 炅 CLINIC',
     address: ['1F–3F, 6 Seolleung-ro 152-gil, Gangnam-gu, Seoul', '(BK Cheongdam Bldg., Cheongdam-dong) · +82-2-6959-8787'],
