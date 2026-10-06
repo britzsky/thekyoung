@@ -111,6 +111,7 @@ export default {
     ],
   },
   cta: 'Start by telling us about your skin today — we are here to listen.',
+  toTop: 'Back to top',
   footer: {
     name: '© THE 炅 CLINIC',
     address: ['1F–3F, 6 Seolleung-ro 152-gil, Gangnam-gu, Seoul', '(BK Cheongdam Bldg., Cheongdam-dong) · +82-2-6959-8787'],

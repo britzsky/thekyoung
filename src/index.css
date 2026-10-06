@@ -56,21 +56,29 @@ a { color: inherit; }
   backdrop-filter: blur(6px);
   border-bottom: 1px solid var(--line);
 }
+/* 3칸: 로고(왼쪽 끝) · 메뉴(정가운데) · 언어 전환(오른쪽 끝) */
 .nav-inner {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  justify-content: space-between;
   gap: 24px;
   padding: 22px 40px;
-  max-width: 1120px;
+  max-width: 1200px;
   margin: 0 auto;
 }
+/* 로고를 아래 본문의 왼쪽 시작선에 맞춤 (넓은 화면에서 최대 40px 안쪽으로) */
+.nav-inner .logo {
+  justify-self: start;
+  margin-left: clamp(0px, (100vw - 1120px) / 2, 40px);
+}
+.nav-inner .lang-switch { grid-column: 3; justify-self: end; }
 .logo {
   font-family: var(--serif);
   font-size: 19px;
   font-weight: 500;
   letter-spacing: 0.02em;
 }
+a.logo { text-decoration: none; }
 .logo .mark,
 .hero-intro .mark { color: var(--gold); }
 .hero-intro .mark { font-weight: 700; }
@@ -95,87 +103,69 @@ a { color: inherit; }
 }
 .nav-cta:hover { background: var(--ink); color: var(--bg); }
 
-/* 언어 전환 — 버튼마다 각국 대표색
-   점(::before)은 국기를 단순화한 표식, 선택된 버튼은 대표색으로 채움 */
+/* 언어 전환 — 테두리 없이 글자 + 작은 국기색 점, 사이에 가는 세로선
+   선택된 언어는 로고 '의원'과 같은 금색, 마우스를 올리면 그 나라 대표색 */
 .lang-switch {
   display: flex;
-  gap: 6px;
+  align-items: center;
   flex: none;
 }
 .lang-btn {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 11px 6px 8px;
+  padding: 4px 10px;
   font-family: var(--sans);
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 400;
   line-height: 1;
   letter-spacing: 0.04em;
   color: var(--muted);
-  background: transparent;
-  border: 1px solid var(--line);
-  border-radius: 999px;
+  background: none;
+  border: none;
   cursor: pointer;
-  transition: color 0.15s, background-color 0.15s, border-color 0.15s;
+  transition: color 0.15s;
 }
+.lang-btn + .lang-btn { border-left: 1px solid var(--line); }
+.lang-btn:last-child { padding-right: 0; }
 .lang-btn::before {
   content: '';
   flex: none;
-  width: 10px;
-  height: 10px;
+  width: 9px;
+  height: 9px;
   border-radius: 50%;
   background: var(--flag);
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
 }
-.lang-btn:hover {
-  color: var(--accent);
-  border-color: var(--accent);
-}
+.lang-btn:hover { color: var(--accent); }
 .lang-btn[aria-pressed="true"] {
-  color: var(--on-active);
-  background: var(--active);
-  border-color: var(--accent);
-}
-.lang-btn[aria-pressed="true"]::before {
-  box-shadow: 0 0 0 1.5px var(--ring);
+  color: var(--gold);
+  font-weight: 700;
 }
 .lang-btn:focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 1px solid var(--gold);
   outline-offset: 2px;
 }
 
 /* 한국: 태극의 빨강·파랑 */
 .lang-ko {
   --accent: #0047a0;
-  --active: #0047a0;
-  --on-active: #fff;
-  --ring: #fff;
   --flag: linear-gradient(160deg, #cd2e3a 50%, #0047a0 50%);
 }
 /* 영어권: 네이비 바탕에 빨강 (영국·미국 국기) */
 .lang-en {
   --accent: #012169;
-  --active: #012169;
-  --on-active: #fff;
-  --ring: #fff;
   --flag: radial-gradient(circle, #c8102e 0 34%, #fff 36% 50%, #012169 52%);
 }
 /* 중국: 빨강 바탕에 금색 */
 .lang-zh {
   --accent: #de2910;
-  --active: #de2910;
-  --on-active: #ffde00;
-  --ring: #ffde00;
   --flag: radial-gradient(circle, #ffde00 0 34%, #de2910 36%);
   font-family: 'Noto Sans SC', var(--sans);
 }
 /* 일본: 흰 바탕에 붉은 원 */
 .lang-ja {
   --accent: #bc002d;
-  --active: #fff;
-  --on-active: #bc002d;
-  --ring: #bc002d;
   --flag: radial-gradient(circle, #bc002d 0 46%, #fff 50%);
   font-family: 'Noto Sans JP', var(--sans);
 }
@@ -184,10 +174,9 @@ a { color: inherit; }
   .nav-links { display: none; }
 }
 @media (max-width: 520px) {
-  .nav-inner { padding: 14px 16px; gap: 10px; flex-wrap: wrap; }
+  .nav-inner { display: flex; justify-content: space-between; padding: 14px 16px; gap: 10px; flex-wrap: wrap; }
   .logo { font-size: 17px; }
-  .lang-switch { gap: 4px; }
-  .lang-btn { padding: 5px 8px 5px 6px; font-size: 11px; gap: 4px; }
+  .lang-btn { padding: 4px 7px; font-size: 11px; gap: 5px; }
   .lang-btn::before { width: 8px; height: 8px; }
 }
 
@@ -523,4 +512,60 @@ footer {
   gap: 16px;
   font-size: 13px;
   color: var(--muted);
+}
+
+/* 위로 가기 — 평소엔 연하게, 마우스를 올리면 짙은 색으로 채워짐 */
+.to-top {
+  position: fixed;
+  right: 32px;
+  bottom: 32px;
+  z-index: 30;
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  color: var(--ink);
+  background: rgba(250, 248, 243, 0.85);
+  backdrop-filter: blur(6px);
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(8px);
+  transition: opacity 0.3s, visibility 0.3s, transform 0.3s,
+    background-color 0.25s, border-color 0.25s, color 0.25s, box-shadow 0.25s;
+}
+.to-top.shown {
+  opacity: 0.45;
+  visibility: visible;
+  transform: none;
+}
+.to-top svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform 0.25s;
+}
+.to-top.shown:hover,
+.to-top.shown:focus-visible {
+  opacity: 1;
+  color: var(--bg);
+  background: var(--ink);
+  border-color: var(--gold);
+  box-shadow: 0 0 0 4px rgba(171, 138, 73, 0.18), 0 8px 20px rgba(42, 39, 33, 0.18);
+  transform: translateY(-3px);
+  outline: none;
+}
+.to-top.shown:hover svg { transform: translateY(-2px); }
+.to-top.shown:active { transform: translateY(-1px); }
+@media (max-width: 520px) {
+  .to-top { right: 16px; bottom: 16px; width: 46px; height: 46px; }
+  .to-top.shown { opacity: 0.6; }
 }

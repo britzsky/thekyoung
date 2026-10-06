@@ -1,4 +1,4 @@
-import { Fragment } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import { LANGS, useLang } from './i18n/index.js'
 import ext06 from '../assert/images/main/KakaoTalk_20261002_111913256_12.jpg'
 import ext04 from '../assert/images/main/KakaoTalk_20261002_111247636_04.jpg'
@@ -89,6 +89,39 @@ function GoldMark({ text }) {
   ))
 }
 
+// 페이지 맨 위로 부드럽게 이동 (로고, 위로 가기 버튼에서 사용)
+const scrollToTop = (e) => {
+  e.preventDefault()
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+}
+
+// 오른쪽 아래 위로 가기 버튼 — 조금 내려왔을 때만 나타남
+function ToTop({ label }) {
+  const [shown, setShown] = useState(false)
+
+  useEffect(() => {
+    const onScroll = () => setShown(window.scrollY > 400)
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
+  return (
+    <button
+      type="button"
+      className={`to-top${shown ? ' shown' : ''}`}
+      aria-label={label}
+      title={label}
+      tabIndex={shown ? 0 : -1}
+      onClick={scrollToTop}
+    >
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 19V5M5.5 11.5 12 5l6.5 6.5" />
+      </svg>
+    </button>
+  )
+}
+
 // KO · EN · 中文 · 日本語 전환 버튼 (각국 대표색은 index.css의 .lang-ko 등에서 지정)
 function LangSwitch({ lang, onChange }) {
   return (
@@ -116,7 +149,7 @@ export default function App() {
     <>
       <nav className="nav">
         <div className="nav-inner">
-          <div className="logo">{t.logo.name}<span className="mark">{t.logo.mark}</span></div>
+          <a className="logo" href="#" onClick={scrollToTop}>{t.logo.name}<span className="mark">{t.logo.mark}</span></a>
           <ul className="nav-links">
             <li><a href="#about">{t.nav.about}</a></li>
             <li><a href="#treatments">{t.nav.treatments}</a></li>
@@ -287,6 +320,8 @@ export default function App() {
           <span><Lines lines={t.footer.address} /></span>
         </div>
       </footer>
+
+      <ToTop label={t.toTop} />
     </>
   )
 }

@@ -118,6 +118,7 @@ export default {
     ],
   },
   cta: "지금의 피부 상태부터, 편하게 이야기 나눠보세요.",
+  toTop: "맨 위로",
   footer: {
     name: "© 더 경의원 THE 炅 CLINIC",
     address: [
