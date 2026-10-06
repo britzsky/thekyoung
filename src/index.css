@@ -71,7 +71,9 @@ a { color: inherit; }
   font-weight: 500;
   letter-spacing: 0.02em;
 }
-.logo .mark { color: var(--gold); }
+.logo .mark,
+.hero-intro .mark { color: var(--gold); }
+.hero-intro .mark { font-weight: 700; }
 .nav-links {
   display: flex;
   gap: 36px;

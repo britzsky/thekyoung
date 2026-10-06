@@ -79,6 +79,16 @@ function Lines({ lines }) {
   ))
 }
 
+// 문구 속 '炅'만 로고의 '의원'과 같은 금색으로 표시
+function GoldMark({ text }) {
+  return text.split('炅').map((part, i) => (
+    <Fragment key={i}>
+      {i > 0 && <span className="mark">炅</span>}
+      {part}
+    </Fragment>
+  ))
+}
+
 // KO · EN · 中文 · 日本語 전환 버튼 (각국 대표색은 index.css의 .lang-ko 등에서 지정)
 function LangSwitch({ lang, onChange }) {
   return (
@@ -120,7 +130,7 @@ export default function App() {
       </nav>
 
       <header className="hero">
-        <p className="hero-intro">{t.hero.intro}</p>
+        <p className="hero-intro"><GoldMark text={t.hero.intro} /></p>
         <h1 className="serif">
           <Lines lines={t.hero.title} />
         </h1>
